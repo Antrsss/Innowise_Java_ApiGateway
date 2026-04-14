@@ -37,9 +37,14 @@ public class RegistrationOrchestratorImpl implements RegistrationOrchestrator {
     userDto.setActive(true);
 
     return authWebClient.saveCredentials(authReq)
-        .then(userWebClient.createProfile(userDto))
-        .map(res -> ResponseEntity.status(HttpStatus.CREATED).body("User fully registered"))
-        .onErrorResume(e -> authWebClient.rollback(dto.getEmail())
-            .then(Mono.error(new UserProfileCreationUserException("Registration failed, rolled back"))));
+        .then(userWebClient.createProfile(userDto)
+            .onErrorResume(e ->
+                authWebClient.rollback(dto.getEmail())
+                    .then(Mono.error(
+                        new UserProfileCreationUserException("Profile creation failed, rolled back credentials")
+                    ))
+            )
+        )
+        .map(res -> ResponseEntity.status(HttpStatus.CREATED).body("User fully registered"));
   }
 }

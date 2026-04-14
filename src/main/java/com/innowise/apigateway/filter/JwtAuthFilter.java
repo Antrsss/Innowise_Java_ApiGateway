@@ -17,10 +17,6 @@ import org.springframework.http.HttpStatusCode;
 public class JwtAuthFilter extends AbstractGatewayFilterFactory<JwtAuthFilter.Config> {
 
   private static final String VALIDATION_PATH = "/auth/validate";
-  private static final String LOGIN_PATH = "/login";
-  private static final String REGISTER_PATH = "/register";
-  private static final String BEARER_TOKEN = "Bearer ";
-
   private final WebClient webClient;
 
   public JwtAuthFilter(WebClient.Builder builder, UriConfig uriConfig) {
@@ -34,22 +30,16 @@ public class JwtAuthFilter extends AbstractGatewayFilterFactory<JwtAuthFilter.Co
   public GatewayFilter apply(Config config) {
     return (exchange, chain) -> {
       ServerHttpRequest request = exchange.getRequest();
-      String path = request.getURI().getPath();
-
-      if (path.contains(LOGIN_PATH) || path.contains(REGISTER_PATH)) {
-        return chain.filter(exchange);
-      }
-
       String authHeader = request.getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
 
-      if (authHeader != null && authHeader.startsWith(BEARER_TOKEN)) {
-        String token = authHeader.substring(7);
+      if (authHeader != null && authHeader.startsWith(Config.BEARER_TOKEN_PREFIX)) {
+        String token = authHeader.substring(Config.TOKEN_START_INDEX);
 
         return validateTokenRemote(token)
             .flatMap(userInfo -> {
               ServerHttpRequest mutatedRequest = exchange.getRequest()
                   .mutate()
-                  .header("X-User-Email", userInfo.getEmail())
+                  .header(Config.USER_EMAIL_HEADER, userInfo.getEmail())
                   .build();
 
               return chain.filter(exchange.mutate().request(mutatedRequest).build());
@@ -68,12 +58,16 @@ public class JwtAuthFilter extends AbstractGatewayFilterFactory<JwtAuthFilter.Co
   private Mono<UserDto> validateTokenRemote(String token) {
     return webClient.post()
         .uri(VALIDATION_PATH)
-        .header(HttpHeaders.AUTHORIZATION, BEARER_TOKEN + token)
+        .header(HttpHeaders.AUTHORIZATION, Config.BEARER_TOKEN_PREFIX + token)
         .retrieve()
         .onStatus(HttpStatusCode::isError, clientResponse ->
             Mono.error(new InvalidJwtUserException("Token is invalid")))
         .bodyToMono(UserDto.class);
   }
 
-  public static class Config {}
+  public static class Config {
+    private static final String USER_EMAIL_HEADER = "X-User-Email";
+    private static final String BEARER_TOKEN_PREFIX = "Bearer ";
+    private static final int TOKEN_START_INDEX = 7;
+  }
 }
