@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: api-gateway
+
+server:
+  port: 8765
+
+services-routes:
+  auth-service: "http://localhost:8082"
+  user-service: "http://localhost:8081"
+  order-service: "http://localhost:8083"
