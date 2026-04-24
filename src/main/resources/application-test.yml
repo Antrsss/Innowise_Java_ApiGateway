@@ -1,0 +1,3 @@
+services-routes:
+  auth-service: http://localhost:${wiremock.server.port}
+  user-service: http://localhost:${wiremock.server.port}
