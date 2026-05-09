@@ -15,7 +15,7 @@ public class RegistrationController {
 
   private final RegistrationOrchestratorImpl orchestrator;
 
-  @PostMapping("/register")
+  @PostMapping("/auth/register")
   public Mono<ResponseEntity<String>> register(@RequestBody @Valid RegistrationDto dto) {
     return orchestrator.register(dto);
   }

@@ -23,10 +23,11 @@ public class RegistrationOrchestratorImpl implements RegistrationOrchestrator {
 
   @Override
   public Mono<ResponseEntity<String>> register(RegistrationDto dto) {
+    var role = dto.getRole() != null ? Role.valueOf(dto.getRole()) : Role.ROLE_USER;
     AuthRequest authReq = new AuthRequest(
         dto.getEmail(),
         dto.getPassword(),
-        Role.valueOf(dto.getRole())
+        role
     );
 
     UserDto userDto = new UserDto();

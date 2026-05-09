@@ -56,9 +56,11 @@ public class JwtAuthFilter extends AbstractGatewayFilterFactory<JwtAuthFilter.Co
   }
 
   private Mono<UserDto> validateTokenRemote(String token) {
-    return webClient.post()
-        .uri(VALIDATION_PATH)
-        .header(HttpHeaders.AUTHORIZATION, Config.BEARER_TOKEN_PREFIX + token)
+    return webClient.get()
+        .uri(uriBuilder -> uriBuilder
+            .path(VALIDATION_PATH)
+            .queryParam("token", token)
+            .build())
         .retrieve()
         .onStatus(HttpStatusCode::isError, clientResponse ->
             Mono.error(new InvalidJwtUserException("Token is invalid")))

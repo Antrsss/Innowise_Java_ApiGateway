@@ -30,8 +30,8 @@ class JwtAuthFilterTest {
 
   @Test
   void filter_Success_ShouldForwardEmailHeader() {
-    stubFor(post(urlEqualTo("/auth/validate"))
-        .withHeader(HttpHeaders.AUTHORIZATION, equalTo("Bearer " + TEST_TOKEN))
+    stubFor(get(urlPathEqualTo("/auth/validate"))
+        .withQueryParam("token", equalTo(TEST_TOKEN))
         .willReturn(aResponse()
             .withStatus(200)
             .withHeader("Content-Type", "application/json")

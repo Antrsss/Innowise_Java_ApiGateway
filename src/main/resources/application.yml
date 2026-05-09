@@ -6,6 +6,7 @@ server:
   port: 8765
 
 services-routes:
-  auth-service: "http://localhost:8082"
-  user-service: "http://localhost:8081"
-  order-service: "http://localhost:8083"
+  auth-service: "http://authentication-service:8080"
+  user-service: "http://user-service:8080"
+  order-service: "http://order-service:8080"
+  payment-service: "http://payment-service:8080"

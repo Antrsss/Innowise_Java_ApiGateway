@@ -10,4 +10,5 @@ public class UriConfig {
   private String userService;
   private String authService;
   private String orderService;
+  private String paymentService;
 }

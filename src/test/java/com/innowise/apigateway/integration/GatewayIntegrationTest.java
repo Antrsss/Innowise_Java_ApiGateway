@@ -47,7 +47,7 @@ class GatewayIntegrationTest {
             .withBody("{\"id\": 1, \"email\": \"test@innowise.com\"}")));
 
     webTestClient.post()
-        .uri("/api/register")
+        .uri("/api/auth/register")
         .contentType(MediaType.APPLICATION_JSON)
         .bodyValue(registrationDto)
         .exchange()
@@ -67,7 +67,7 @@ class GatewayIntegrationTest {
         .willReturn(aResponse().withStatus(200)));
 
     webTestClient.post()
-        .uri("/api/register")
+        .uri("/api/auth/register")
         .contentType(MediaType.APPLICATION_JSON)
         .bodyValue(registrationDto)
         .exchange()

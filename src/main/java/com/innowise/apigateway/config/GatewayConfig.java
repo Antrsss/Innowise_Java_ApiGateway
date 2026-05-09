@@ -17,6 +17,8 @@ public class GatewayConfig {
   private static final String USERS_PATH = "/api/users/**";
   private static final String CARDS_PATH = "/api/cards/**";
   private static final String ORDERS_PATH = "/api/orders/**";
+  private static final String ITEMS_PATH = "/api/items/**";
+  private static final String PAYMENTS_PATH = "/api/payments/**";
 
   private final JwtAuthFilter jwtFilter;
   private final UriConfig uriConfig;
@@ -44,6 +46,15 @@ public class GatewayConfig {
             .path(ORDERS_PATH)
             .filters(f -> f.filter(authFilter))
             .uri(uriConfig.getOrderService()))
+
+        .route("item-service", p -> p
+            .path(ITEMS_PATH)
+            .uri(uriConfig.getOrderService()))
+
+        .route("payment-service", p -> p
+            .path(PAYMENTS_PATH)
+            .filters(f -> f.filter(authFilter))
+            .uri(uriConfig.getPaymentService()))
 
         .build();
   }
